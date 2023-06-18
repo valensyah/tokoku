@@ -20,7 +20,19 @@ class Dashboard extends CI_Controller {
 	 */
 	public function index()
 	{
-		$data['page'] = 'dashboard_admin';
+		$this->load->model('ProductModel');
+		$data = [
+			'page' => 'dashboard_user',
+			'product' => $this->ProductModel->getProduct()
+		];
+		$this->load->view('theme/index', $data);
+	}
+	public function indexAdmin() {
+		$this->load->model('CheckoutModel');
+		$data = [
+			'page' => 'dashboard_admin',
+			'checkout' => $this->CheckoutModel->getCheckout()
+		];
 		$this->load->view('theme/index', $data);
 	}
 }

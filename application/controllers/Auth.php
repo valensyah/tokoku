@@ -18,18 +18,32 @@ class Auth extends CI_Controller {
 	 * map to /index.php/welcome/<method_name>
 	 * @see https://codeigniter.com/userguide3/general/urls.html
 	 */
+
+	 public function __construct() {
+		parent::__construct();
+		$this->load->library('session');
+	 }
 	public function index()
 	{
 		$this->load->view('login');
 	}
 
     public function login() {
-        $this->load->model('AuthModel');
+        $this->load->model(array('AuthModel', 'ProductModel'));
+        $this->load->library('session');
+
         $result = $this->AuthModel->login($this->input->post('email'), $this->input->post('password'));
-        $data = [
-            'page' => 'dashboard',
-            'data' => $result
-        ];
-        redirect('Dashboard/index');
+        if (count($result) > 0) {
+            $this->session->set_userdata('user', $result);
+			if ($result[0]->role == 1) {
+				redirect('Dashboard/indexAdmin');
+			} else {
+				redirect('Dashboard/index');
+			}
+            
+        } else {
+            $data['error'] = 'username/password tidak invalid';
+            $this->load->view('login', $data);
+        }
     }
 }
